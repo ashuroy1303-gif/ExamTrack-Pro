@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExamTrack — Government Exam Preparation Tracker</title>
+
+<style>
+:root {
+    --bg: #f4f7fb;
+    --card: #ffffff;
+    --text: #172033;
+    --muted: #6b7280;
+    --primary: #4f46e5;
+    --primary2: #6366f1;
+    --border: #e5e7eb;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --warning: #d97706;
+    --shadow: 0 8px 25px rgba(15, 23, 42, .07);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+                 "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+button, input, select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    width: 250px;
+    background: #111827;
+    color: white;
+    padding: 22px 16px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 21px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.logo span {
+    color: #818cf8;
+}
+
+.subtitle {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-bottom: 30px;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.nav button {
+    border: 0;
+    background: transparent;
+    color: #d1d5db;
+    padding: 12px 13px;
+    border-radius: 10px;
+    text-align: left;
+    transition: .2s;
+}
+
+.nav button:hover,
+.nav button.active {
+    background: #312e81;
+    color: white;
+}
+
+.developer {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    border-top: 1px solid #374151;
+    padding-top: 15px;
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.developer strong {
+    display: block;
+    color: white;
+    margin-top: 4px;
+}
+
+/* MAIN */
+
+.main {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 25px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.topbar h1 {
+    font-size: 26px;
+}
+
+.topbar p {
+    color: var(--muted);
+    margin-top: 4px;
+    font-size: 13px;
+}
+
+.top-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.icon-btn {
+    border: 1px solid var(--border);
+    background: var(--card);
+    border-radius: 10px;
+    width: 42px;
+    height: 42px;
+}
+
+/* COMMON */
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.grid {
+    display: grid;
+    gap: 16px;
+}
+
+.stats {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+}
+
+.stat-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.stat-value {
+    font-size: 27px;
+    font-weight: 800;
+    margin-top: 8px;
+}
+
+.stat-icon {
+    position: absolute;
+    right: 17px;
+    top: 17px;
+    font-size: 23px;
+}
+
+.section-title {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.mt {
+    margin-top: 18px;
+}
+
+/* BUTTONS */
+
+.btn {
+    border: 0;
+    padding: 10px 15px;
+    border-radius: 9px;
+    background: var(--primary);
+    color: white;
+    font-weight: 700;
+    transition: .2s;
+}
+
+.btn:hover {
+    background: #4338ca;
+}
+
+.btn.secondary {
+    background: #eef2ff;
+    color: #4338ca;
+}
+
+.btn.danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.btn.small {
+    padding: 7px 10px;
+    font-size: 12px;
+}
+
+/* EXAM SELECT */
+
+.exam-box {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+select,
+input {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 9px;
+    outline: none;
+}
+
+select:focus,
+input:focus {
+    border-color: var(--primary);
+}
+
+/* PROGRESS */
+
+.progress {
+    width: 100%;
+    height: 9px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--primary), var(--primary2));
+    border-radius: 20px;
+    transition: width .4s ease;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 7px;
+}
+
+/* DASHBOARD */
+
+.two-col {
+    grid-template-columns: 1.35fr .65fr;
+}
+
+.subject-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.subject-card {
+    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+.subject-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.subject-name {
+    font-weight: 700;
+}
+
+.subject-percent {
+    font-size: 12px;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* ACTIVITY */
+
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.activity {
+    padding: 12px;
+    border-radius: 10px;
+    background: var(--bg);
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.activity small {
+    color: var(--muted);
+}
+
+/* SYLLABUS */
+
+.subject-section {
+    margin-bottom: 22px;
+}
+
+.subject-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.topic {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.topic:last-child {
+    border-bottom: 0;
+}
+
+.topic input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+}
+
+.topic-name {
+    flex: 1;
+}
+
+.topic.done .topic-name {
+    text-decoration: line-through;
+    color: var(--muted);
+}
+
+.subject-progress {
+    width: 150px;
+}
+
+/* FORMS */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.full {
+    grid-column: 1 / -1;
+}
+
+/* ANALYTICS */
+
+.analytics-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.bar-row {
+    margin-bottom: 16px;
+}
+
+.bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.bar {
+    height: 12px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 20px;
+    background: var(--primary);
+}
+
+/* DAYS */
+
+.week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.day {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 10px 5px;
+    text-align: center;
+}
+
+.day-name {
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.day-time {
+    font-weight: 800;
+    margin-top: 5px;
+    font-size: 13px;
+}
+
+/* MODAL */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-box {
+    background: var(--card);
+    width: 100%;
+    max-width: 550px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 17px;
+    padding: 20px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.close {
+    border: 0;
+    background: transparent;
+    font-size: 22px;
+}
+
+/* MOBILE */
+
+.mobile-nav {
+    display: none;
+}
+
+@media(max-width: 900px) {
+
+    .sidebar {
+        display: none;
+    }
+
+    .main {
+        margin-left: 0;
+        width: 100%;
+        padding: 15px;
+        padding-bottom: 85px;
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .two-col,
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mobile-nav {
+        position: fixed;
+        display: flex;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 65px;
+        background: var(--card);
+        border-top: 1px solid var(--border);
+        z-index: 150;
+        justify-content: space-around;
+    }
+
+    .mobile-nav button {
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        font-size: 11px;
+    }
+
+    .mobile-nav button.active {
+        color: var(--primary);
+        font-weight: 800;
+    }
+}
+
+@media(max-width: 550px) {
+
+    .topbar h1 {
+        font-size: 21px;
+    }
+
+    .stats {
+        gap: 10px;
+    }
+
+    .card {
+        padding: 14px;
+    }
+
+    .subject-grid,
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .week-grid {
+        gap: 4px;
+    }
+
+    .day {
+        padding: 8px 2px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        Exam<span>Track</span>
+    </div>
+
+    <div class="subtitle">
+        Government Exam Preparation
+    </div>
+
+    <div class="nav">
+
+        <button class="active" onclick="showPage('dashboard',this)">
+            📊 Dashboard
+        </button>
+
+        <button onclick="showPage('syllabus',this)">
+            📚 Syllabus
+        </button>
+
+        <button onclick="showPage('study',this)">
+            ⏱️ Study Tracker
+        </button>
+
+        <button onclick="showPage('analytics',this)">
+            📈 Analytics
+        </button>
+
+        <button onclick="showPage('settings',this)">
+            ⚙️ Settings
+        </button>
+
+    </div>
+
+    <div class="developer">
+        Developed by
+        <strong>Ashirwad Bharti</strong>
+    </div>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+    <header class="topbar">
+
+        <div>
+            <h1 id="pageTitle">Dashboard</h1>
+            <p id="todayText"></p>
+        </div>
+
+        <div class="top-actions">
+            <button class="icon-btn" onclick="toggleTheme()">🌙</button>
+            <button class="btn" onclick="openStudyModal()">+ Study</button>
+        </div>
+
+    </header>
+
+
+<!-- ================= DASHBOARD ================= -->
+
+<section id="dashboard" class="page active">
+
+    <div class="card">
+
+        <div class="exam-box">
+
+            <div>
+                <strong>Current Exam</strong>
+                <div style="font-size:12px;color:var(--muted)">
+                    Select your preparation target
+                </div>
+            </div>
+
+            <select id="examSelect" onchange="changeExam()"></select>
+
+        </div>
+
+    </div>
+
+
+    <div class="grid stats mt">
+
+        <div class="card stat-card">
+            <div class="stat-label">Today's Study</div>
+            <div class="stat-value" id="todayStudy">0m</div>
+            <div class="stat-icon">⏱️</div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-label">Questions Solved</div>
+            <div class="stat-value" id="totalQuestions">0</div>
+            <div class="stat-icon">📝</div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-label">Accuracy</div>
+            <div class="stat-value" id="accuracy">0%</div>
+            <div class="stat-icon">🎯</div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-label">Study Streak</div>
+            <div class="stat-value" id="streak">0 🔥</div>
+            <div class="stat-icon">🏆</div>
+        </div>
+
+    </div>
+
+
+    <div class="grid two-col mt">
+
+        <div class="card">
+
+            <div class="section-title">
+                Syllabus Progress
+            </div>
+
+            <div class="progress-info">
+                <span id="syllabusText">0 / 0 topics</span>
+                <strong id="syllabusPercent">0%</strong>
+            </div>
+
+            <div class="progress">
+                <div class="progress-bar" id="syllabusBar"></div>
+            </div>
+
+            <div class="grid subject-grid mt" id="subjectProgress"></div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="section-title">
+                This Week
+            </div>
+
+            <div class="week-grid" id="weekGrid"></div>
+
+            <div class="mt">
+                <div class="progress-info">
+                    <span>Weekly target</span>
+                    <strong id="weeklyTargetText">0%</strong>
+                </div>
+
+                <div class="progress">
+                    <div class="progress-bar" id="weeklyBar"></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card mt">
+
+        <div class="section-title">
+            Recent Activity
+        </div>
+
+        <div class="activity-list" id="activityList">
+            <div class="activity">
+                <span>No activity yet.</span>
+                <small>Start studying!</small>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= SYLLABUS ================= -->
+
+<section id="syllabus" class="page">
+
+    <div class="card">
+
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap">
+
+            <div>
+                <div class="section-title" style="margin-bottom:3px">
+                    Syllabus Tracker
+                </div>
+
+                <small style="color:var(--muted)">
+                    Tick topics as you complete them.
+                </small>
+            </div>
+
+            <button class="btn" onclick="openTopicModal()">
+                + Add Topic
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div id="syllabusContainer" class="mt"></div>
+
+</section>
+
+
+<!-- ================= STUDY ================= -->
+
+<section id="study" class="page">
+
+    <div class="card">
+
+        <div class="section-title">
+            Record Study Session
+        </div>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Subject</label>
+                <select id="studySubject"></select>
+            </div>
+
+            <div class="form-group">
+                <label>Topic</label>
+                <input id="studyTopic" placeholder="e.g. Number System">
+            </div>
+
+            <div class="form-group">
+                <label>Study Time (minutes)</label>
+                <input id="studyMinutes" type="number" min="1" placeholder="60">
+            </div>
+
+            <div class="form-group">
+                <label>Questions Attempted</label>
+                <input id="studyQuestions" type="number" min="0" placeholder="50">
+            </div>
+
+            <div class="form-group">
+                <label>Correct</label>
+                <input id="studyCorrect" type="number" min="0" placeholder="45">
+            </div>
+
+            <div class="form-group">
+                <label>Wrong</label>
+                <input id="studyWrong" type="number" min="0" placeholder="5">
+            </div>
+
+            <div class="full">
+                <button class="btn" onclick="saveStudySession()">
+                    Save Study Session
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card mt">
+
+        <div class="section-title">
+            Study History
+        </div>
+
+        <div id="studyHistory"></div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= ANALYTICS ================= -->
+
+<section id="analytics" class="page">
+
+    <div class="grid analytics-grid">
+
+        <div class="card">
+
+            <div class="section-title">
+                Subject Study Time
+            </div>
+
+            <div id="subjectAnalytics"></div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="section-title">
+                Subject Accuracy
+            </div>
+
+            <div id="accuracyAnalytics"></div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card mt">
+
+        <div class="section-title">
+            Personal Effectiveness
+        </div>
+
+        <p style="font-size:13px;color:var(--muted);margin-bottom:15px">
+            Effectiveness is calculated from your study time,
+            question practice and accuracy. It is not a prediction of
+            actual exam weightage.
+        </p>
+
+        <div id="effectiveness"></div>
+
+    </div>
+
+
+    <div class="card mt">
+
+        <div class="section-title">
+            Your Preparation Insights
+        </div>
+
+        <div id="insights"></div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= SETTINGS ================= -->
+
+<section id="settings" class="page">
+
+    <div class="card">
+
+        <div class="section-title">
+            Settings
+        </div>
+
+        <div class="form-group">
+            <label>Weekly Study Target (minutes)</label>
+            <input id="weeklyTarget" type="number" min="1">
+        </div>
+
+        <br>
+
+        <button class="btn" onclick="saveSettings()">
+            Save Settings
+        </button>
+
+        <button class="btn danger" onclick="resetData()">
+            Reset All Data
+        </button>
+
+    </div>
+
+
+    <div class="card mt">
+
+        <div class="section-title">
+            About ExamTrack
+        </div>
+
+        <p style="font-size:14px;line-height:1.7;color:var(--muted)">
+            ExamTrack is a personal preparation dashboard for
+            government examination aspirants.
+        </p>
+
+        <br>
+
+        <strong>Developer</strong>
+        <p style="color:var(--primary);font-weight:700">
+            Ashirwad Bharti
+        </p>
+
+    </div>
+
+</section>
+
+</main>
+
+</div>
+
+
+<!-- MOBILE NAV -->
+
+<div class="mobile-nav">
+
+    <button class="active" onclick="showPage('dashboard',this)">
+        📊<br>Home
+    </button>
+
+    <button onclick="showPage('syllabus',this)">
+        📚<br>Syllabus
+    </button>
+
+    <button onclick="showPage('study',this)">
+        ⏱️<br>Study
+    </button>
+
+    <button onclick="showPage('analytics',this)">
+        📈<br>Stats
+    </button>
+
+</div>
+
+
+<!-- STUDY MODAL -->
+
+<div class="modal" id="studyModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <strong>Quick Study Entry</strong>
+
+            <button class="close" onclick="closeModal('studyModal')">
+                ×
+            </button>
+
+        </div>
+
+        <div class="form-grid">
+
+            <div class="form-group full">
+                <label>Subject</label>
+                <select id="quickSubject"></select>
+            </div>
+
+            <div class="form-group">
+                <label>Minutes</label>
+                <input id="quickMinutes" type="number" min="1">
+            </div>
+
+            <div class="form-group">
+                <label>Questions</label>
+                <input id="quickQuestions" type="number" min="0">
+            </div>
+
+            <div class="form-group">
+                <label>Correct</label>
+                <input id="quickCorrect" type="number" min="0">
+            </div>
+
+            <div class="form-group">
+                <label>Wrong</label>
+                <input id="quickWrong" type="number" min="0">
+            </div>
+
+            <div class="full">
+                <button class="btn" onclick="saveQuickSession()">
+                    Save
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- TOPIC MODAL -->
+
+<div class="modal" id="topicModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <strong>Add New Topic</strong>
+
+            <button class="close" onclick="closeModal('topicModal')">
+                ×
+            </button>
+
+        </div>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Subject</label>
+                <select id="newTopicSubject"></select>
+            </div>
+
+            <div class="form-group">
+                <label>Topic Name</label>
+                <input id="newTopicName" placeholder="Topic name">
+            </div>
+
+            <div class="full">
+                <button class="btn" onclick="addTopic()">
+                    Add Topic
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =============
